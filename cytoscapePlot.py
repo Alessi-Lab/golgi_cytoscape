@@ -1,3 +1,5 @@
+# requires dash and pandas packages
+
 import dash
 import dash_cytoscape as cyto
 from dash.dependencies import Input, Output
@@ -7,6 +9,11 @@ import pandas as pd
 cyto.load_extra_layouts()
 app = dash.Dash(__name__)
 server = app.server
+
+# filepath for input tabulated text file that need the following columns: Difference, Significant, Gene.names, Golgi, Glycosylation, Phosphatases, Kinases, Dark.kinases, Ub.Pathway
+# In columns Golgi, Glycosylation, Phosphatases, Kinases, Dark.kinases, Ub.Pathway, the presence of a '+' means that the entry belong to the category of the column name
+filepath = r"C:\Users\toanp\Downloads\GT-IP_WCL_tTest.txt"
+
 
 def add_individual_protein(df, source, elements):
     highest = df["Difference"].max()
@@ -116,15 +123,12 @@ def add_groups_not_enriched(edf, elements):
 
 block = 0.2
 
-#df = pd.read_csv(r"C:\Users\toanp\Downloads\All enriched_For Network.txt", sep="\t")
-#df = pd.read_csv(r"C:\Users\toanp\Downloads\GT-IP_Mock-IP_tTest.txt", sep="\t")
-df = pd.read_csv(r"C:\Users\toanp\Downloads\GT-IP_WCL_tTest.txt", sep="\t")
+
+df = pd.read_csv(filepath, sep="\t")
 
 df = df[(df["Significant"]=="+")&(df["Difference"] >= 1)]
 
-elements = [
-    #{'data': {'id': 'significant', 'label': f'Significant: {len(df.index)}', "size": len(df.index) * block}, 'classes': 'significant'},
-]
+elements = []
 
 add_groups_enriched(df, elements)
 add_groups_not_enriched(df, elements)
